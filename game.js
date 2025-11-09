@@ -1,44 +1,61 @@
-// game.js: herní logika (5x5 pole, náhodné rozmístění min)
+// game.js — samotná logika minové hry
 const GAME = (() => {
-  const size = 25; // 5x5
+  const SIZE = 25; // 5x5 grid
   let minesCount = 3;
   let mines = new Set();
   let revealed = new Set();
   let picks = [];
 
+  // Nastavení počtu min
   function setMines(count) {
     minesCount = count;
     reset();
   }
 
+  // Reset hry a generování nových min
   function reset() {
     mines.clear();
     revealed.clear();
     picks = [];
     while (mines.size < minesCount) {
-      mines.add(Math.floor(Math.random() * size));
+      mines.add(Math.floor(Math.random() * SIZE));
     }
   }
 
-  function isMine(idx) {
-    return mines.has(idx);
+  // Kontrola, zda je na poli mina
+  function isMine(index) {
+    return mines.has(index);
   }
 
-  function reveal(idx) {
-    if (revealed.has(idx)) return { status: 'already' };
-    revealed.add(idx);
-    picks.push(idx);
-    if (isMine(idx)) return { status: 'mine' };
-    return { status: 'safe', safeCount: picks.filter(i => !mines.has(i)).length };
+  // Odkrytí pole
+  function reveal(index) {
+    if (revealed.has(index)) return { status: "already" };
+    revealed.add(index);
+    picks.push(index);
+
+    if (isMine(index)) {
+      return { status: "mine" };
+    } else {
+      const safeCount = picks.filter(i => !mines.has(i)).length;
+      return { status: "safe", safeCount };
+    }
   }
 
+  // Vrátí všechny miny
   function revealAll() {
     return Array.from(mines);
   }
 
+  // Získání stavu hry
   function getState() {
     return { minesCount, mines: Array.from(mines), picks: [...picks] };
   }
 
-  return { setMines, reset, reveal, isMine, revealAll, getState, size };
+  // Výpočet multiplikátoru (čím víc safe, tím větší)
+  function calcMultiplier(mines, safeCount) {
+    const mult = 1 + (safeCount * (1 / (25 - mines)) * 2.5);
+    return Math.max(1, mult);
+  }
+
+  return { SIZE, setMines, reset, reveal, revealAll, getState, calcMultiplier };
 })();
