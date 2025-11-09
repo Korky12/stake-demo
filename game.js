@@ -51,9 +51,11 @@ const GAME = (() => {
     return { minesCount, mines: Array.from(mines), picks: [...picks] };
   }
 
-  // Výpočet multiplikátoru (čím víc safe, tím větší)
+  // ---------- EXPONENCIÁLNÍ MULTIPLIKÁTOR PODLE RIZIKA ----------
   function calcMultiplier(mines, safeCount) {
-    const mult = 1 + (safeCount * (1 / (25 - mines)) * 2.5);
+    // multiplikátor roste exponenciálně podle počtu min a bezpečných diamantů
+    const baseGrowth = 0.1; // základní růst za diamant, můžeš upravit
+    const mult = Math.pow(1 + baseGrowth * safeCount, mines);
     return Math.max(1, mult);
   }
 

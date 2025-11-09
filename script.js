@@ -145,7 +145,6 @@ cashoutBtn.addEventListener('click', () => {
   updateBalance(balance + payout);
   profitEl.textContent = (payout - currentBet).toFixed(2);
 
-  // ukázání všech bezpečných polí jako "collected"
   tiles.forEach(t => {
     if (t.classList.contains('safe')) {
       t.classList.add('collected');
@@ -156,14 +155,14 @@ cashoutBtn.addEventListener('click', () => {
   playing = false;
   cashoutBtn.disabled = true;
 
-  // ---------- OKAMŽITÝ RESET GRIDU ----------
+  // okamžitý reset gridu s malým timeoutem
   setTimeout(() => {
     GAME.reset();
     buildGrid();
     safePicked = 0;
     pickedEl.textContent = '0';
     profitEl.textContent = '0.00';
-  }, 100); // malý timeout, aby se diamanty stihly zobrazit
+  }, 100);
 });
 
 // ---------- 🔄 INIT ----------
