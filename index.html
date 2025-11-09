@@ -1,74 +1,44 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="cs">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Mines — Demo</title>
-<link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mines Demo</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="container">
-<aside class="panel">
-<div class="mode">
-<button class="tab active">Manual</button>
-<button class="tab">Auto</button>
-</div>
+  <div class="container">
+    <h1 class="title">💎 Mines Demo</h1>
 
+    <div class="stats">
+      <div>Zůstatek: <span id="balance">0</span></div>
+      <div>Vsazená částka: <input type="number" id="betAmount" value="1" min="0.1" step="0.1"> €</div>
+      <div>Počet min: 
+        <select id="minesSelect">
+          <option value="1">1</option>
+          <option value="3" selected>3</option>
+          <option value="5">5</option>
+          <option value="8">8</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+    </div>
 
-<label>Balance</label>
-<div id="balance" class="input">0.00</div>
+    <div class="controls">
+      <button id="betBtn" class="btn green">Začít hru</button>
+      <button id="randomBtn" class="btn blue">Náhodný výběr</button>
+      <button id="cashoutBtn" class="btn yellow" disabled>Vybrat výhru</button>
+    </div>
 
+    <div class="info">
+      <p>Bezpečné výběry: <span id="picked">0</span></p>
+      <p>Zisk: <span id="profit">0.00</span> €</p>
+    </div>
 
-<label>Bet amount</label>
-<input id="betAmount" type="number" min="0" step="0.01" value="1" />
+    <div id="grid" class="grid"></div>
+  </div>
 
-
-<label>Mines</label>
-<select id="minesSelect">
-<option>1</option>
-<option selected>3</option>
-<option>5</option>
-<option>7</option>
-<option>10</option>
-</select>
-
-
-<label>Gems picked</label>
-<div id="picked" class="input">0</div>
-
-
-<button id="betBtn" class="primary">Bet</button>
-<button id="randomBtn" class="muted">Random Pick</button>
-
-
-<div class="profit">
-<div>Total Profit</div>
-<div id="profit">0.00</div>
-</div>
-
-
-<div class="footer-note">Demo: fake peníze, po refreshi se doplní.</div>
-</aside>
-
-
-<main class="game-area">
-<div class="topbar">
-<div class="brand">Mines Demo</div>
-<div class="controls">
-<button id="cashoutBtn" class="primary small" disabled>Cashout</button>
-</div>
-</div>
-g
-
-<div id="grid" class="grid"></div>
-
-
-<div class="bottombar">Built with ❤️ — Demo</div>
-</main>
-</div>
-
-
-<script src="game.js"></script>
-<script src="script.js"></script>
+  <script src="game.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

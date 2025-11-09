@@ -1,0 +1,109 @@
+body {
+  background: #0d1117;
+  color: #eee;
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+
+.title {
+  margin-bottom: 20px;
+  color: #00ffaa;
+  text-shadow: 0 0 10px #00ffaa;
+}
+
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.stats, .controls, .info {
+  margin-bottom: 15px;
+}
+
+.btn {
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #fff;
+  transition: 0.2s;
+  margin: 5px;
+}
+
+.btn.green { background: #16a34a; }
+.btn.blue { background: #2563eb; }
+.btn.yellow { background: #eab308; color: #222; }
+
+.btn:hover { filter: brightness(1.2); }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 80px);
+  grid-gap: 10px;
+  justify-content: center;
+}
+
+.tile {
+  width: 80px;
+  height: 80px;
+  background: #1e293b;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.tile:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #00ffaa55;
+}
+
+.tile.revealed.safe {
+  background: #00ffaa33;
+  box-shadow: 0 0 15px #00ffaa55 inset;
+}
+
+.tile.revealed.mine {
+  background: #ff003355;
+  box-shadow: 0 0 15px #ff0033aa inset;
+}
+
+.tile.collected {
+  background: #00ff9955;
+}
+
+.content {
+  font-size: 20px;
+  line-height: 80px;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #00ffaa55;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tile:hover .glow {
+  opacity: 0.4;
+}
+
+.tile.mine .content {
+  color: #ff0033;
+}
+
+.tile.safe .content {
+  color: #00ffaa;
+}
