@@ -5,13 +5,14 @@ const minesSelect = document.getElementById('minesSelect');
 const randomBtn = document.getElementById('randomBtn');
 const pickedEl = document.getElementById('picked');
 const profitEl = document.getElementById('profit');
-const cashoutBtn = document.getElementById('cashoutBtn');
+const betBtn = document.getElementById('betBtn');
 
 let tiles = [];
 let playing = false;
 let currentBet = 1;
-let balance = 0;
+let balance = 100;
 let safePicked = 0;
+const GRID_SIZE = 5;
 
 // ---------- 💰 BALANCE ----------
 function loadBalance() {
@@ -32,170 +33,160 @@ function updateBalance(v) {
 }
 
 function renderBalance() {
-  balanceEl.textContent = balance.toFixed(2) + " €";
+  balanceEl.textContent = balance.toFixed(2);
 }
 
 // ---------- 🎮 HRA ----------
-function buildGrid() {
+function createGrid() {
   GRID.innerHTML = '';
   tiles = [];
 
-  for (let i = 0; i < GAME.SIZE; i++) {
+  for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
     const tile = document.createElement('div');
     tile.className = 'tile';
     tile.dataset.index = i;
     tile.innerHTML = '<div class="glow"></div><div class="content"></div>';
-    tile.addEventListener('click', onTileClick);
+    tile.addEventListener('click', () => handleTileClick(i));
     GRID.appendChild(tile);
     tiles.push(tile);
   }
 }
 
 function startGame() {
-  currentBet = parseFloat(betAmountEl.value) || 0;
-  if (currentBet <= 0) return alert('Zadej částku betu.');
-  if (currentBet > balance) return alert('Nedostatečný zůstatek.');
+  currentBet = parseFloat(betAmountEl.value);
+  if (isNaN(currentBet) || currentBet <= 0 || currentBet > balance) {
+    alert('Neplatná sázka!');
+    return;
+  }
 
-  GAME.setMines(parseInt(minesSelect.value));
-  GAME.reset();
-  buildGrid();
-  playing = true;
+  balance -= currentBet;
   safePicked = 0;
+  playing = true;
+  updateBalance(balance);
   pickedEl.textContent = '0';
   profitEl.textContent = '0.00';
-  // Odečtení sázky PŘED startem hry (což je správně)
-  updateBalance(balance - currentBet); 
-  cashoutBtn.disabled = true;
+
+  // Vygenerujeme miny
+  const mineCount = parseInt(minesSelect.value);
+  const allIndexes = [...Array(GRID_SIZE * GRID_SIZE).keys()];
+  mines = [];
+  for (let i = 0; i < mineCount; i++) {
+    const index = Math.floor(Math.random() * allIndexes.length);
+    mines.push(allIndexes.splice(index, 1)[0]);
+  }
+
+  tiles.forEach(tile => {
+    tile.className = 'tile';
+    const content = tile.querySelector('.content');
+    content.textContent = '';
+  });
+
+  betBtn.textContent = 'CASHOUT';
+  betBtn.className = 'btn yellow';
 }
 
-// Spustí hru automaticky po zadání betu
-betAmountEl.addEventListener('change', () => { startGame(); });
-minesSelect.addEventListener('change', () => {
-  if (parseFloat(betAmountEl.value) > 0) startGame();
-});
-
-function onTileClick(e) {
+function handleTileClick(index) {
   if (!playing) return;
 
-  const tile = e.currentTarget;
-  const index = parseInt(tile.dataset.index);
+  const tile = tiles[index];
   if (tile.classList.contains('revealed')) return;
 
-  const res = GAME.reveal(index);
-
-  if (res.status === 'mine') {
-    showBomb(tile); // Zobrazí kliknutou bombu
+  if (mines.includes(index)) {
+    showBomb(tile);
     loseGame();
-    // !!! Odhalení celého pole ihned po prohře
-    revealAllTiles(); 
-  } else if (res.status === 'safe') {
+    revealAllTiles();
+  } else {
     showDiamond(tile);
-    safePicked = res.safeCount;
-    updateProfit();
+    safePicked++;
     pickedEl.textContent = safePicked;
-    cashoutBtn.disabled = false;
+    profitEl.textContent = (safePicked * 0.3 * currentBet).toFixed(2);
   }
 }
 
-// Emoji přes celý tile pro bombu
 function showBomb(tile) {
   tile.classList.add('revealed', 'mine');
   const content = tile.querySelector('.content');
   content.textContent = '💣';
-  content.style.fontSize = tile.offsetHeight + 'px';
-  content.style.lineHeight = tile.offsetHeight + 'px';
+  const size = Math.min(tile.offsetWidth, tile.offsetHeight) * 0.9;
+  content.style.fontSize = size + 'px';
+  content.style.display = 'flex';
+  content.style.alignItems = 'center';
+  content.style.justifyContent = 'center';
+  content.style.width = '100%';
+  content.style.height = '100%';
 }
 
 function showDiamond(tile) {
   tile.classList.add('revealed', 'safe');
   const content = tile.querySelector('.content');
   content.textContent = '💎';
-  content.style.fontSize = tile.offsetHeight + 'px';
-  content.style.lineHeight = tile.offsetHeight + 'px';
+  const size = Math.min(tile.offsetWidth, tile.offsetHeight) * 0.9;
+  content.style.fontSize = size + 'px';
+  content.style.display = 'flex';
+  content.style.alignItems = 'center';
+  content.style.justifyContent = 'center';
+  content.style.width = '100%';
+  content.style.height = '100%';
+
   tile.animate(
     [{ transform: 'scale(1)' }, { transform: 'scale(1.15)' }, { transform: 'scale(1)' }],
     { duration: 300 }
   );
 }
 
-/**
- * Odhalí všechny políčka, která ještě nebyla odhalena, 
- * zobrazí buď zbývající bomby, nebo diamanty.
- */
 function revealAllTiles() {
-  const gameState = GAME.getState();
   tiles.forEach((tile, index) => {
-    // Políčko, které již bylo odhaleno, přeskočíme
     if (tile.classList.contains('revealed')) return;
-
-    const isMine = gameState.mines.includes(index);
-
-    if (isMine) {
-      // Zobrazí ostatní (nekliknuté) bomby
+    if (mines.includes(index)) {
       showBomb(tile);
     } else {
-      // Zobrazí zbývající diamanty
       showDiamond(tile);
     }
   });
 }
 
-
 function loseGame() {
   playing = false;
-  cashoutBtn.disabled = true;
-
-  // Nastaví profit na mínus sázku (zůstatek byl odečten už při startGame)
+  betBtn.textContent = 'BET';
+  betBtn.className = 'btn green';
   profitEl.textContent = '-' + currentBet.toFixed(2);
 }
 
-// ---------- 🧮 PROFIT ----------
-function updateProfit() {
-  const mult = GAME.calcMultiplier(GAME.getState().minesCount, safePicked);
-  const profit = currentBet * mult - currentBet;
-  profitEl.textContent = profit.toFixed(2);
+function cashout() {
+  if (!playing) return;
+  balance += parseFloat(profitEl.textContent);
+  updateBalance(balance);
+  resetGame();
 }
 
-// ---------- 🎛️ OVLÁDÁNÍ ----------
+function resetGame() {
+  playing = false;
+  safePicked = 0;
+  createGrid();
+  pickedEl.textContent = '0';
+  profitEl.textContent = '0.00';
+  betBtn.textContent = 'BET';
+  betBtn.className = 'btn green';
+}
+
+// ---------- 🎲 RANDOM ----------
 randomBtn.addEventListener('click', () => {
   if (!playing) return;
   const available = tiles.filter(t => !t.classList.contains('revealed'));
-  if (available.length === 0) return;
+  if (!available.length) return;
   const randomTile = available[Math.floor(Math.random() * available.length)];
   randomTile.click();
 });
 
-cashoutBtn.addEventListener('click', () => {
-  if (!playing) return;
-
-  const mult = GAME.calcMultiplier(GAME.getState().minesCount, safePicked);
-  const payout = currentBet * mult;
-
-  updateBalance(balance + payout);
-  profitEl.textContent = (payout - currentBet).toFixed(2);
-
-  tiles.forEach(t => {
-    if (t.classList.contains('safe')) {
-      t.classList.add('collected');
-      const content = t.querySelector('.content');
-      content.textContent = '💎';
-      content.style.fontSize = t.offsetHeight + 'px';
-      content.style.lineHeight = t.offsetHeight + 'px';
-    }
-  });
-
-  playing = false;
-  cashoutBtn.disabled = true;
-
-  // automatický reset po krátké animaci
-  setTimeout(() => {
-    GAME.reset();
-    buildGrid();
-    pickedEl.textContent = '0';
-    profitEl.textContent = '0.00';
-  }, 1200);
+// ---------- 🔘 EVENT ----------
+betBtn.addEventListener('click', () => {
+  if (playing) {
+    cashout();
+  } else {
+    startGame();
+  }
 });
 
 // ---------- 🔄 INIT ----------
 loadBalance();
-buildGrid();
+createGrid();

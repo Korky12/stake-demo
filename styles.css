@@ -1,69 +1,69 @@
 body {
-  background: #0d1117;
-  color: #eee;
-  font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  padding: 20px;
-  text-align: center;
+    background: #0d1117;
+    color: #eee;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
 }
 
 .title {
-  color: #00ffaa;
-  text-shadow: 0 0 10px #00ffaa;
-  margin-bottom: 20px;
+    color: #00ffaa;
+    text-shadow: 0 0 10px #00ffaa;
+    margin-bottom: 20px;
 }
 
 /* Rozložení */
 .container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 60px;
-  flex-wrap: wrap;
-  max-width: 1200px;
-  margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 60px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 /* Levý panel */
 .left-panel {
-  background: #1e293b;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 20px #00ffaa22;
-  min-width: 250px;
-  text-align: left;
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px #00ffaa22;
+    min-width: 250px;
+    text-align: left;
 }
 
 .stat-item {
-  margin-bottom: 12px;
+    margin-bottom: 12px;
 }
 
 .stat-item label {
-  display: block;
-  margin-bottom: 5px;
-  color: #00ffaa;
+    display: block;
+    margin-bottom: 5px;
+    color: #00ffaa;
 }
 
 input, select {
-  background: #0d1117;
-  border: 1px solid #00ffaa55;
-  color: #fff;
-  padding: 8px;
-  border-radius: 6px;
-  width: 100%;
-  text-align: center;
+    background: #0d1117;
+    border: 1px solid #00ffaa55;
+    color: #fff;
+    padding: 8px;
+    border-radius: 6px;
+    width: 100%;
+    text-align: center;
 }
 
 .btn {
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  color: #fff;
-  transition: 0.2s;
-  margin: 5px 0;
-  width: 100%;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.2s;
+    margin: 5px 0;
+    width: 100%;
 }
 
 .btn.green { background: #16a34a; }
@@ -73,151 +73,149 @@ input, select {
 .btn:hover { filter: brightness(1.2); }
 
 .info {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #bbb;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #bbb;
 }
 
 /* Herní mřížka */
 .grid {
-  display: grid;
-  grid-template-columns: repeat(5, 110px);
-  grid-gap: 15px;
-  justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(5, 110px);
+    grid-gap: 15px;
+    justify-content: center;
 }
 
 .tile {
-  width: 110px;
-  height: 110px;
-  background: #1e293b;
-  border-radius: 12px;
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+    width: 110px;
+    height: 110px;
+    background: #1e293b;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .tile:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 20px #00ffaa55;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #00ffaa55;
 }
 
 .tile.revealed.safe {
-  background: #00ffaa33;
-  box-shadow: 0 0 15px #00ffaa55 inset;
+    background: #00ffaa33;
+    box-shadow: 0 0 15px #00ffaa55 inset;
 }
 
 .tile.revealed.mine {
-  background: #ff003355;
-  box-shadow: 0 0 15px #ff0033aa inset;
+    background: #ff003355;
+    box-shadow: 0 0 15px #ff0033aa inset;
 }
 
 .tile.collected {
-  background: #00ff9955;
+    background: #00ff9955;
 }
 
+/* --- KLÍČOVÁ ÚPRAVA ZDE --- */
 .content {
-  font-size: 28px;
-  line-height: 110px;
-  position: absolute;
-  width: 100%;
-  height: 100%;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    line-height: 1;
+    font-size: 0; 
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }
+/* -------------------------- */
 
 .glow {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 12px;
-  box-shadow: 0 0 10px #00ffaa55;
-  opacity: 0;
-  transition: opacity 0.3s;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    box-shadow: 0 0 10px #00ffaa55;
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 
 .tile:hover .glow {
-  opacity: 0.4;
+    opacity: 0.4;
 }
 
 .tile.mine .content {
-  color: #ff0033;
+    color: #ff0033;
 }
 
 .tile.safe .content {
-  color: #00ffaa;
+    color: #00ffaa;
 }
+
 /* ===== Mobilní verze ===== */
 @media (max-width: 768px) {
-  body {
-    padding: 10px;
-  }
+    body {
+        padding: 10px;
+    }
 
-  .container {
-    flex-direction: column-reverse; /* grid nahoře, ovládání dole */
-    align-items: center;
-    gap: 25px;
-    width: 100%;
-  }
+    .container {
+        flex-direction: column-reverse; /* grid nahoře, ovládání dole */
+        align-items: center;
+        gap: 25px;
+        width: 100%;
+    }
 
-  .title {
-    font-size: 24px;
-    margin-bottom: 15px;
-  }
+    .title {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
 
-  .grid {
-    grid-template-columns: repeat(5, 65px);
-    grid-gap: 8px;
-    justify-content: center;
-    margin: 0 auto;
-  }
+    .grid {
+        grid-template-columns: repeat(5, 65px);
+        grid-gap: 8px;
+        justify-content: center;
+        margin: 0 auto;
+    }
 
-  .tile {
-    width: 65px;
-    height: 65px;
-  }
+    .tile {
+        width: 65px;
+        height: 65px;
+    }
 
-  .content {
-    font-size: 22px;
-    line-height: 65px;
-  }
+    .content {
+        font-size: 0;
+        line-height: 1;
+    }
 
-  .left-panel {
-    width: 90%;
-    text-align: center;
-    background: #1e293b;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 0 15px #00ffaa22;
-  }
+    .left-panel {
+        width: 90%;
+        text-align: center;
+        background: #1e293b;
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 0 15px #00ffaa22;
+    }
 
-  .stats, .controls, .info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
+    .stats, .controls, .info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
 
-  .stat-item {
-    width: 100%;
-    max-width: 260px;
-    margin-bottom: 10px;
-  }
+    .stat-item {
+        width: 100%;
+        max-width: 260px;
+        margin-bottom: 10px;
+    }
 
-  input, select {
-    font-size: 15px;
-    padding: 6px;
-  }
-
-  .btn {
-    width: 100%;
-    max-width: 260px;
-    font-size: 15px;
-    padding: 10px;
-    margin: 6px 0;
-  }
-
-  .info p {
-    font-size: 14px;
-  }
+    input, select {
+        font-size: 15px;
+        padding: 6px;
+    }
+    .btn {
+        font-size: 15px;
+        padding: 8px 0;
+    } 
 }
