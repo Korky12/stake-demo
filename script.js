@@ -63,15 +63,13 @@ function startGame() {
   safePicked = 0;
   pickedEl.textContent = '0';
   profitEl.textContent = '0.00';
-  updateBalance(balance - currentBet);
+  // Odečtení sázky PŘED startem hry (což je správně)
+  updateBalance(balance - currentBet); 
   cashoutBtn.disabled = true;
 }
 
 // Spustí hru automaticky po zadání betu
-betAmountEl.addEventListener('change', () => {
-  startGame();
-});
-
+betAmountEl.addEventListener('change', () => { startGame(); });
 minesSelect.addEventListener('change', () => {
   if (parseFloat(betAmountEl.value) > 0) startGame();
 });
@@ -86,8 +84,10 @@ function onTileClick(e) {
   const res = GAME.reveal(index);
 
   if (res.status === 'mine') {
-    showMine(tile);
+    showBomb(tile); // Zobrazí kliknutou bombu
     loseGame();
+    // !!! Odhalení celého pole ihned po prohře
+    revealAllTiles(); 
   } else if (res.status === 'safe') {
     showDiamond(tile);
     safePicked = res.safeCount;
@@ -97,34 +97,56 @@ function onTileClick(e) {
   }
 }
 
-function showMine(tile) {
+// Emoji přes celý tile pro bombu
+function showBomb(tile) {
   tile.classList.add('revealed', 'mine');
-  tile.querySelector('.content').textContent = '💣';
+  const content = tile.querySelector('.content');
+  content.textContent = '💣';
+  content.style.fontSize = tile.offsetHeight + 'px';
+  content.style.lineHeight = tile.offsetHeight + 'px';
 }
 
 function showDiamond(tile) {
   tile.classList.add('revealed', 'safe');
-  tile.querySelector('.content').textContent = '💎';
+  const content = tile.querySelector('.content');
+  content.textContent = '💎';
+  content.style.fontSize = tile.offsetHeight + 'px';
+  content.style.lineHeight = tile.offsetHeight + 'px';
   tile.animate(
     [{ transform: 'scale(1)' }, { transform: 'scale(1.15)' }, { transform: 'scale(1)' }],
     { duration: 300 }
   );
 }
 
+/**
+ * Odhalí všechny políčka, která ještě nebyla odhalena, 
+ * zobrazí buď zbývající bomby, nebo diamanty.
+ */
+function revealAllTiles() {
+  const gameState = GAME.getState();
+  tiles.forEach((tile, index) => {
+    // Políčko, které již bylo odhaleno, přeskočíme
+    if (tile.classList.contains('revealed')) return;
+
+    const isMine = gameState.mines.includes(index);
+
+    if (isMine) {
+      // Zobrazí ostatní (nekliknuté) bomby
+      showBomb(tile);
+    } else {
+      // Zobrazí zbývající diamanty
+      showDiamond(tile);
+    }
+  });
+}
+
+
 function loseGame() {
   playing = false;
   cashoutBtn.disabled = true;
 
-  const mines = GAME.revealAll();
-  mines.forEach(i => {
-    if (!tiles[i].classList.contains('revealed')) {
-      tiles[i].classList.add('revealed', 'mine');
-      tiles[i].querySelector('.content').textContent = '💣';
-    }
-  });
-
+  // Nastaví profit na mínus sázku (zůstatek byl odečten už při startGame)
   profitEl.textContent = '-' + currentBet.toFixed(2);
-  updateBalance(balance - currentBet);
 }
 
 // ---------- 🧮 PROFIT ----------
@@ -155,7 +177,10 @@ cashoutBtn.addEventListener('click', () => {
   tiles.forEach(t => {
     if (t.classList.contains('safe')) {
       t.classList.add('collected');
-      t.querySelector('.content').textContent = '💎';
+      const content = t.querySelector('.content');
+      content.textContent = '💎';
+      content.style.fontSize = t.offsetHeight + 'px';
+      content.style.lineHeight = t.offsetHeight + 'px';
     }
   });
 
