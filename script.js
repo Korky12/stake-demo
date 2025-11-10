@@ -1,9 +1,7 @@
-// script.js — propojení hry s UI a ovládáním
 const GRID = document.getElementById('grid');
 const balanceEl = document.getElementById('balance');
 const betAmountEl = document.getElementById('betAmount');
 const minesSelect = document.getElementById('minesSelect');
-const betBtn = document.getElementById('betBtn');
 const randomBtn = document.getElementById('randomBtn');
 const pickedEl = document.getElementById('picked');
 const profitEl = document.getElementById('profit');
@@ -52,6 +50,31 @@ function buildGrid() {
     tiles.push(tile);
   }
 }
+
+function startGame() {
+  currentBet = parseFloat(betAmountEl.value) || 0;
+  if (currentBet <= 0) return alert('Zadej částku betu.');
+  if (currentBet > balance) return alert('Nedostatečný zůstatek.');
+
+  GAME.setMines(parseInt(minesSelect.value));
+  GAME.reset();
+  buildGrid();
+  playing = true;
+  safePicked = 0;
+  pickedEl.textContent = '0';
+  profitEl.textContent = '0.00';
+  updateBalance(balance - currentBet);
+  cashoutBtn.disabled = true;
+}
+
+// Spustí hru automaticky po zadání betu
+betAmountEl.addEventListener('change', () => {
+  startGame();
+});
+
+minesSelect.addEventListener('change', () => {
+  if (parseFloat(betAmountEl.value) > 0) startGame();
+});
 
 function onTileClick(e) {
   if (!playing) return;
@@ -112,22 +135,6 @@ function updateProfit() {
 }
 
 // ---------- 🎛️ OVLÁDÁNÍ ----------
-betBtn.addEventListener('click', () => {
-  currentBet = parseFloat(betAmountEl.value) || 0;
-  if (currentBet <= 0) return alert('Zadej částku betu.');
-  if (currentBet > balance) return alert('Nedostatečný zůstatek.');
-
-  GAME.setMines(parseInt(minesSelect.value));
-  GAME.reset();
-  buildGrid();
-  playing = true;
-  safePicked = 0;
-  pickedEl.textContent = '0';
-  profitEl.textContent = '0.00';
-  updateBalance(balance - currentBet);
-  cashoutBtn.disabled = true;
-});
-
 randomBtn.addEventListener('click', () => {
   if (!playing) return;
   const available = tiles.filter(t => !t.classList.contains('revealed'));
@@ -155,14 +162,13 @@ cashoutBtn.addEventListener('click', () => {
   playing = false;
   cashoutBtn.disabled = true;
 
-  // okamžitý reset gridu s malým timeoutem
+  // automatický reset po krátké animaci
   setTimeout(() => {
     GAME.reset();
     buildGrid();
-    safePicked = 0;
     pickedEl.textContent = '0';
     profitEl.textContent = '0.00';
-  }, 100);
+  }, 1200);
 });
 
 // ---------- 🔄 INIT ----------
