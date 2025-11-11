@@ -84,6 +84,9 @@ input, select {
     grid-template-columns: repeat(5, 110px);
     grid-gap: 15px;
     justify-content: center;
+    font-size: 50px;
+    line-height: 2;
+
 }
 
 .tile {
@@ -176,6 +179,7 @@ input, select {
         grid-gap: 8px;
         justify-content: center;
         margin: 0 auto;
+        font-size: 30px;
     }
 
     .tile {
