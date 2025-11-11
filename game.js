@@ -22,7 +22,6 @@ const GRID_SIZE = 5;
 function createGrid() {
   grid.innerHTML = "";
   tiles = [];
-
   for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
     const tile = document.createElement("div");
     tile.classList.add("tile");
@@ -41,7 +40,29 @@ function updateUI() {
   pickedDisplay.textContent = picked;
 }
 
-// 🧨 Start hry (po kliknutí na BET)
+// Výpočet payoutu podle počtu odhalených safe políček
+// ---------- Výpočet férového payoutu ----------
+function calculatePayout(safePicked, currentBet, mineCount) {
+    const GRID_SIZE = 5;               // velikost gridu 5x5
+    const NUMBER_OF_TILES = GRID_SIZE * GRID_SIZE;
+    const HOUSE_EDGE = 0.99;           // kasino si bere 1%
+
+    const safeTilesLeft = NUMBER_OF_TILES - mineCount;
+
+    let probability = 1;
+
+    // vypočítáme pravděpodobnost přežití pro všechny safe políčka, které hráč už odhalil
+    for (let k = 0; k < safePicked; k++) {
+        probability *= (safeTilesLeft - k) / (NUMBER_OF_TILES - k);
+    }
+
+    const payout = HOUSE_EDGE / probability;
+
+    return currentBet * payout;
+}
+
+
+// 🧨 Start hry
 function startGame() {
   if (gameActive) {
     cashout();
@@ -52,23 +73,23 @@ function startGame() {
   if (isNaN(bet) || bet <= 0 || bet > balance) {
     alert("Neplatná sázka!");
     return;
-  } // Odečteme sázku
+  }
 
   balance -= bet;
   profit = 0;
   picked = 0;
   firstClickDone = false;
   gameActive = true;
-  updateUI(); // Vygenerujeme miny
+  updateUI();
 
+  // Miny
   const mineCount = parseInt(minesSelect.value);
   const allIndexes = [...Array(GRID_SIZE * GRID_SIZE).keys()];
   mines = [];
-
   for (let i = 0; i < mineCount; i++) {
     const index = Math.floor(Math.random() * allIndexes.length);
     mines.push(allIndexes.splice(index, 1)[0]);
-  } // Vyčistíme grid
+  }
 
   tiles.forEach((tile) => {
     tile.textContent = "";
@@ -82,72 +103,47 @@ function startGame() {
 // 💎 Kliknutí na políčko
 function handleTileClick(index) {
   if (!gameActive) return;
-
   const tile = tiles[index];
   if (tile.classList.contains("revealed")) return;
 
   if (!firstClickDone) firstClickDone = true;
 
+  const currentBet = parseFloat(betInput.value);
+
   if (mines.includes(index)) {
-    // PROHRA!
-    tile.classList.add("revealed", "bomb");
+    // PROHRA
+    tile.classList.add("revealed", "mine");
     tile.textContent = "💣";
-    loseGame(); // !!! Volání funkce s animovaným odhalováním
+    loseGame();
     revealAllTiles();
   } else {
-    // VÝHRA TAHU
-    tile.classList.add("revealed", "diamond");
-    tile.textContent = "💎"; // Animace pro úspěšný klik
-    tile.animate(
-      [
-        { transform: "scale(1)" },
-        { transform: "scale(1.15)" },
-        { transform: "scale(1)" },
-      ],
-      { duration: 300 }
-    );
+    // SAFE políčko
+    tile.classList.add("revealed", "safe");
+    tile.textContent = "💎";
+    tile.animate([{ transform: "scale(1)" }, { transform: "scale(1.15)" }, { transform: "scale(1)" }], { duration: 300 });
     picked++;
-    profit += 0.3 * parseFloat(betInput.value);
+    profit = calculatePayout(picked, currentBet, mines.length);
     updateUI();
   }
 }
 
-/**
- * Odhalí všechna políčka po prohře s postupným efektem.
- */
+// Odhalí všechna políčka
 function revealAllTiles() {
   tiles.forEach((tile, index) => {
-    // Políčko, které již bylo odhaleno, přeskočíme
-    if (tile.classList.contains("revealed")) return; // Postupné zpoždění: 30 ms na každé políčko pro kaskádový efekt
-
-    const delay = index * 30;
-
-    setTimeout(() => {
-      if (mines.includes(index)) {
-        // Zobrazit nekliknuté bomby
-        tile.classList.add("revealed", "bomb");
-        tile.textContent = "💣";
-      } else {
-        // Zobrazit zbývající diamanty
-        tile.classList.add("revealed", "diamond-missed");
-        tile.textContent = "💎";
-      } // NOVÁ ANIMACE odhalení pro každé políčko
-
-      tile.animate(
-        [
-          { opacity: 0, transform: "scale(0.5)" },
-          { opacity: 1, transform: "scale(1)" },
-        ],
-        { duration: 200 } // Rychlá animace
-      );
-    }, delay); // Použití kaskádového zpoždění
+    if (tile.classList.contains("revealed")) return;
+    if (mines.includes(index)) {
+      tile.classList.add("revealed", "mine");
+      tile.textContent = "💣";
+    } else {
+      tile.classList.add("revealed", "safe");
+      tile.textContent = "💎";
+    }
   });
 }
 
 // 💰 Cashout
 function cashout() {
   if (!gameActive) return;
-
   balance += profit;
   resetGame();
 }
@@ -174,16 +170,11 @@ function resetGame() {
   createGrid();
 }
 
-// 🎲 Random tile (jen pokud hra běží)
+// 🎲 Random tile
 function randomTile() {
   if (!gameActive) return;
-
-  const unrevealed = tiles
-    .map((t, i) => (!t.classList.contains("revealed") ? i : null))
-    .filter((i) => i !== null);
-
+  const unrevealed = tiles.map((t, i) => (!t.classList.contains("revealed") ? i : null)).filter((i) => i !== null);
   if (unrevealed.length === 0) return;
-
   const randomIndex = unrevealed[Math.floor(Math.random() * unrevealed.length)];
   handleTileClick(randomIndex);
 }

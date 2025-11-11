@@ -14,6 +14,14 @@ let balance = 100;
 let safePicked = 0;
 const GRID_SIZE = 5;
 
+// Inicializace selectu s bombami
+for (let i = 1; i <= 24; i++) {
+  const opt = document.createElement('option');
+  opt.value = i;
+  opt.textContent = i;
+  minesSelect.appendChild(opt);
+}
+
 // ---------- 💰 BALANCE ----------
 function loadBalance() {
   const saved = parseFloat(localStorage.getItem('demo_balance'));
@@ -99,7 +107,7 @@ function handleTileClick(index) {
     showDiamond(tile);
     safePicked++;
     pickedEl.textContent = safePicked;
-    profitEl.textContent = (safePicked * 0.3 * currentBet).toFixed(2);
+    profitEl.textContent = calculatePayout(safePicked, currentBet, mines.length).toFixed(2);
   }
 }
 
@@ -169,7 +177,16 @@ function resetGame() {
   betBtn.className = 'btn green';
 }
 
-// ---------- 🎲 RANDOM ----------
+// Výpočet payoutu
+function calculatePayout(safePicked, currentBet, mineCount) {
+  const totalTiles = GRID_SIZE * GRID_SIZE;
+  const riskFactor = mineCount / totalTiles;
+  const baseMultiplier = 1 + riskFactor * 5;
+  const progressMultiplier = 0.3 * safePicked;
+  return currentBet * (baseMultiplier + progressMultiplier);
+}
+
+// Random tile
 randomBtn.addEventListener('click', () => {
   if (!playing) return;
   const available = tiles.filter(t => !t.classList.contains('revealed'));
@@ -178,7 +195,7 @@ randomBtn.addEventListener('click', () => {
   randomTile.click();
 });
 
-// ---------- 🔘 EVENT ----------
+// Bet/Cashout
 betBtn.addEventListener('click', () => {
   if (playing) {
     cashout();
@@ -187,6 +204,6 @@ betBtn.addEventListener('click', () => {
   }
 });
 
-// ---------- 🔄 INIT ----------
+// Init
 loadBalance();
 createGrid();

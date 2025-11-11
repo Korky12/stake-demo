@@ -86,51 +86,68 @@ input, select {
     justify-content: center;
     font-size: 50px;
     line-height: 2;
-
 }
 
+/* 💎 3D Tiles */
 .tile {
     width: 110px;
     height: 110px;
-    background: #1e293b;
+    background: linear-gradient(145deg, #243046, #1b2433);
     border-radius: 12px;
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.2s ease;
+    box-shadow:
+        4px 4px 10px rgba(0, 0, 0, 0.4),
+        -4px -4px 10px rgba(255, 255, 255, 0.05);
 }
 
 .tile:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 20px #00ffaa55;
+    box-shadow:
+        2px 2px 5px rgba(0, 0, 0, 0.5),
+        -2px -2px 5px rgba(255, 255, 255, 0.08);
 }
 
+/* Efekt při kliknutí (zatlačení) */
+.tile:active {
+    transform: scale(0.95);
+    box-shadow:
+        inset 2px 2px 6px rgba(0, 0, 0, 0.6),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.1);
+}
+
+/* Odhalené stavy */
 .tile.revealed.safe {
-    background: #00ffaa33;
-    box-shadow: 0 0 15px #00ffaa55 inset;
+    background: radial-gradient(circle at center, #00ffaa55, #1e293b);
+    box-shadow:
+        0 0 15px #00ffaaaa inset,
+        0 0 10px #00ffaa55;
 }
 
 .tile.revealed.mine {
-    background: #ff003355;
-    box-shadow: 0 0 15px #ff0033aa inset;
+    background: radial-gradient(circle at center, #ff003355, #1e293b);
+    box-shadow:
+        0 0 15px #ff0033aa inset,
+        0 0 10px #ff003377;
 }
 
 .tile.collected {
     background: #00ff9955;
 }
 
-/* --- KLÍČOVÁ ÚPRAVA ZDE --- */
+/* Obsah políčka (diamant/bomba) */
 .content {
     display: flex; 
     justify-content: center; 
     align-items: center; 
     line-height: 1;
-    font-size: 0; 
+    font-size: 0;
     position: absolute;
     width: 100%;
     height: 100%;
 }
-/* -------------------------- */
 
 .glow {
     position: absolute;
@@ -218,6 +235,7 @@ input, select {
         font-size: 15px;
         padding: 6px;
     }
+
     .btn {
         font-size: 15px;
         padding: 8px 0;
