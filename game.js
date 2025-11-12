@@ -139,15 +139,6 @@ function revealAllTiles() {
       tile.textContent = "💎";
     }
   });
-      tile.animate(
-        [
-          { opacity: 0, transform: "scale(0.5)" },
-          { opacity: 1, transform: "scale(1)" },
-        ],
-        { duration: 200 } // Rychlá animace
-      );
-    }, delay); // Použití kaskádového zpoždění
-  });
 }
 
 // 💰 Cashout
