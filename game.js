@@ -130,16 +130,32 @@ function handleTileClick(index) {
 // Odhalí všechna políčka
 function revealAllTiles() {
   tiles.forEach((tile, index) => {
+    // přeskočí už odhalené
     if (tile.classList.contains("revealed")) return;
-    if (mines.includes(index)) {
-      tile.classList.add("revealed", "mine");
-      tile.textContent = "💣";
-    } else {
-      tile.classList.add("revealed", "safe");
-      tile.textContent = "💎";
-    }
+
+    setTimeout(() => {
+      // jestli je mina
+      const isMine = mines.includes(index);
+
+      tile.classList.add("revealed");
+      tile.textContent = isMine ? "💣" : "💎";
+
+      // 🎞️ přidej krátkou animaci
+      tile.animate(
+        [
+          { transform: "scale(0)", opacity: 0 },
+          { transform: "scale(1.2)", opacity: 1 },
+          { transform: "scale(1)", opacity: 1 }
+        ],
+        {
+          duration: 300,
+          easing: "ease-out",
+        }
+      );
+    }, index * 60); // postupně každá o 60 ms později
   });
 }
+
 
 // 💰 Cashout
 function cashout() {
